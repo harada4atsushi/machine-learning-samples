@@ -23,10 +23,10 @@ vocabulary = count_vectorizer.get_feature_names()
 svm_tuned_parameters = [
     {
         'kernel': ['linear'],
-        'gamma': [2**n for n in range(-5, 3)],
-        'C': [2**n for n in range(-5, 8)]
-        # 'gamma': [2**n for n in range(-15, 3)],
-        # 'C': [2**n for n in range(-5, 15)]
+        # 'gamma': [2**n for n in range(-5, 3)],
+        # 'C': [2**n for n in range(-5, 8)]
+        'gamma': [2**n for n in range(-15, 3)],
+        'C': [2**n for n in range(-5, 15)]
     }
 ]
 gscv = GridSearchCV(
@@ -53,17 +53,16 @@ print gscv.best_params_  # 高パフォーマンスのパラメータ(gamma,Cの
 # )
 # feature_vectors = count_vectorizer.fit_transform(input_texts)
 
-print svm_model.predict(feature_vectors)
+results = svm_model.predict(feature_vectors)
 #print svm_model.score(data_parser.labels, feature_vectors)
+
+for i in range(len(results)):
+    print results[i]
+    print data_parser.texts[i]
+    print
 
 scores = cross_validation.cross_val_score(svm_model, feature_vectors, data_parser.labels, cv=2)
 print("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
-
-# print "\n+ テストデータでの識別結果:\n"
-# y_true, y_pred = svm_model.predict(feature_vectors)
-# print classification_report(y_true, y_pred)
-
-
 
 # 学習済みモデルをdumpする
 #joblib.dump(svm_model, "models/svm_model")

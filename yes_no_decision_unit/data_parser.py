@@ -4,6 +4,8 @@ import sqlite3
 from tinydb import TinyDB, Query
 
 class DataParser:
+    UNIDIC_PATH = '/usr/local/lib/mecab/dic/unidic/'
+
     def __init__(self, db=None):
         self.lines = []
         self.texts = []
@@ -20,13 +22,14 @@ class DataParser:
             self.labels.append(record['label'])
 
     def split(self, text):
-        tagger = MeCab.Tagger()
+        #tagger = MeCab.Tagger("-d " + DataParser.UNIDIC_PATH)
+        tagger = MeCab.Tagger("-u dict/custom.dic")
         text = text.encode("utf-8")
         node = tagger.parseToNode(text)
         word_list = []
         while node:
             pos = node.feature.split(",")[0]
-            if pos in ["名詞", "動詞", "形容詞"]:
+            if pos in ["名詞", "動詞", "形容詞", "感動詞"]:
                 lemma = node.feature.split(",")[6].decode("utf-8")
                 if lemma == u"*":
                     lemma = node.surface.decode("utf-8")
