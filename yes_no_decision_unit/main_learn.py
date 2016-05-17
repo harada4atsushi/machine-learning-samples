@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -
 import numpy as np
+import pandas as pd
 import sys
 from tinydb import TinyDB, Query
 from sklearn.svm import SVC
 from sklearn.grid_search import GridSearchCV
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.externals import joblib
+from sklearn import cross_validation
 from data_parser import DataParser
 from plotter import Plotter
 from predicter import Predicter
@@ -21,8 +23,10 @@ vocabulary = count_vectorizer.get_feature_names()
 svm_tuned_parameters = [
     {
         'kernel': ['linear'],
-        'gamma': [2**n for n in range(-15, 3)],
-        'C': [2**n for n in range(-5, 15)]
+        'gamma': [2**n for n in range(-5, 3)],
+        'C': [2**n for n in range(-5, 8)]
+        # 'gamma': [2**n for n in range(-15, 3)],
+        # 'C': [2**n for n in range(-5, 15)]
     }
 ]
 gscv = GridSearchCV(
@@ -39,6 +43,28 @@ svm_model = gscv.best_estimator_
 print svm_model  # 高パフォーマンスの学習モデル
 print gscv.best_params_  # 高パフォーマンスのパラメータ(gamma,Cの値)
 
+# Xtrain = pd.Series(["はい", "いいえ", "うん", "いや", "ストップ"])
+# input_texts = []
+# for input_text in Xtrain:
+#   input_texts.append(data_parser.split(input_text.decode('utf-8')))
+#
+# count_vectorizer = CountVectorizer(
+#     vocabulary=vocabulary
+# )
+# feature_vectors = count_vectorizer.fit_transform(input_texts)
+
+print svm_model.predict(feature_vectors)
+#print svm_model.score(data_parser.labels, feature_vectors)
+
+scores = cross_validation.cross_val_score(svm_model, feature_vectors, data_parser.labels, cv=2)
+print("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+
+# print "\n+ テストデータでの識別結果:\n"
+# y_true, y_pred = svm_model.predict(feature_vectors)
+# print classification_report(y_true, y_pred)
+
+
+
 # 学習済みモデルをdumpする
 #joblib.dump(svm_model, "models/svm_model")
 #joblib.dump(vocabulary, 'vocabulary/vocabulary.pkl')
@@ -48,7 +74,7 @@ print gscv.best_params_  # 高パフォーマンスのパラメータ(gamma,Cの
 # plotter.plot(svm_model, feature_vectors, data_parser.labels)
 
 # 分類させる
-sys.argv.pop(0)
-predicter = Predicter()
-result = predicter.predict(svm_model, data_parser, sys.argv, vocabulary)
-print result
+# sys.argv.pop(0)
+# predicter = Predicter()
+# result = predicter.predict(svm_model, data_parser, sys.argv, vocabulary)
+# print result
