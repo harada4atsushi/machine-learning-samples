@@ -29,7 +29,7 @@ class DataParser:
         word_list = []
         while node:
             pos = node.feature.split(",")[0]
-            if pos in ["名詞", "動詞", "形容詞", "感動詞"]:
+            if pos in ["名詞", "動詞", "形容詞", "感動詞", "助動詞"]:
                 lemma = node.feature.split(",")[6].decode("utf-8")
                 if lemma == u"*":
                     lemma = node.surface.decode("utf-8")

@@ -65,8 +65,8 @@ scores = cross_validation.cross_val_score(svm_model, feature_vectors, data_parse
 print("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
 
 # 学習済みモデルをdumpする
-#joblib.dump(svm_model, "models/svm_model")
-#joblib.dump(vocabulary, 'vocabulary/vocabulary.pkl')
+joblib.dump(svm_model, "models/svm_model")
+joblib.dump(vocabulary, 'vocabulary/vocabulary.pkl')
 
 # 学習曲線を描画する
 # plotter = Plotter()
