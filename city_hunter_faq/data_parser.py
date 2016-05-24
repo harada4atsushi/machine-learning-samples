@@ -7,8 +7,11 @@ class DataParser:
     UNIDIC_PATH = '/usr/local/lib/mecab/dic/unidic/'
 
     def __init__(self, db=None):
+        if db is None:
+          return
         self.lines = []
         self.texts = []
+        self.category_ids = []
         self.splited_texts = []
         self.labels = []
         self.load_from_tinydb(db)
@@ -18,6 +21,7 @@ class DataParser:
         for record in results:
             self.lines.append(record)
             self.texts.append(record['text'])
+            self.category_ids.append(record['category_id'])
             self.splited_texts.append(self.split(record['text']))
             self.labels.append(record['label'])
 
