@@ -1,0 +1,7 @@
+images/ramen1.jpg 1
+images/ramen2.jpg 1
+images/ramen3.jpg 1
+images/ramen4.jpg 1
+images/gyoza1.jpg 0
+images/gyoza2.jpg 0
+images/gyoza3.jpg 0
