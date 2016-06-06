@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -
-import pdb
+#import pdb
+import sys; sys.path.append('db')
 import numpy as np
+from seed import *
 from sklearn.svm import SVC
 from sklearn.grid_search import GridSearchCV
 from sklearn.externals import joblib
 from dataset import Dataset
 from feature_builder import FeatureBuilder
 # from predicter import Predicter
+
+seed()
 
 dataset = Dataset('db/dataset.json')
 
