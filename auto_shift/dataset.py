@@ -18,7 +18,7 @@ class Dataset:
         db = TinyDB(db_path)
         results = db.all()
         for record in results:
-            self.features = np.append(self.features, np.array([[record['day_of_week'], record['day_of_week']]]), axis=0)
+            self.features = np.append(self.features, np.array([[record['day_of_week'], record['employee_id']]]), axis=0)
             self.attend = np.append(self.attend, record['attend'])
 
         #self.day_of_week = self.day_of_week
