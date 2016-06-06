@@ -7,22 +7,20 @@ from sklearn.svm import SVC
 from sklearn.grid_search import GridSearchCV
 from sklearn.externals import joblib
 from dataset import Dataset
-from feature_builder import FeatureBuilder
-# from predicter import Predicter
+from prettytable import PrettyTable
 
 seed()
-
 dataset = Dataset('db/dataset.json')
 
-# feature_builder = FeatureBuilder(dataset)
-# features = feature_builder.get_features()
-#
 # 学習する
 svm_tuned_parameters = [
     {
         'kernel': ['rbf'],
-        'gamma': [2**n for n in range(-15, 3)],
-        'C': [2**n for n in range(-5, 15)]
+        # 'gamma': [2**n for n in range(-15, 3)],
+        # 'C': [2**n for n in range(-5, 15)]
+        # 毎回GridSearchさせると時間がかかってしまうので開発中は固定しておく
+        'gamma': [4],
+        'C': [1]
     }
 ]
 gscv = GridSearchCV(
@@ -35,42 +33,16 @@ gscv = GridSearchCV(
 
 gscv.fit(dataset.features, dataset.attend)
 clf = gscv.best_estimator_
-#
-# print clf  # 高パフォーマンスの学習モデル
-# print gscv.best_params_  # 高パフォーマンスのパラメータ(gamma,Cの値)
 
-# clf = SVC(probability=True)
-# clf.fit(dataset.features, dataset.attend)
-
-# shift = [
-#    [0, 0, 0, 0, 0, 0, 0],
-#    [0, 0, 0, 0, 0, 0, 0],
-# ]
-#
-# for i in range(0, 7):
-#     attend_number = 0
-#     for row in shift:
-#         attend_number += row[i]
-#
-#     attend = clf.predict([[i + 1, attend_number]])[0]
-#     shift[0][i] = attend
-#
-# for i in range(0, 7):
-#     attend_number = 0
-#     for row in shift:
-#         attend_number += row[i]
-#
-#     attend = clf.predict([[i + 1, attend_number]])[0]
-#     shift[1][i] = attend
-#
-# print shift
+print clf  # 高パフォーマンスの学習モデル
+print gscv.best_params_  # 高パフォーマンスのパラメータ(gamma,Cの値)
 
 shift = np.c_[np.zeros(4)]
 for i in range(0, 7):
-    results = clf.predict_proba([[i+1,1],[i+1,2],[i+1,3],[i+1,4]])
-    indexes = np.argsort(results[:,1])[::-1]
+    results = clf.predict_proba([[i+1,1],[i+1,2],[i+1,3],[i+1,4]])  # 予測する
+    indexes = np.argsort(results[:,1])[::-1]  # 確率の高い順に並び替え
 
-    # 平日は2名、休日は3名体制
+    # 平日は上位2名、休日は上位3名を出勤にする
     threshold = 2
     if i in [5,6]:
         threshold = 3
@@ -78,21 +50,19 @@ for i in range(0, 7):
     col = np.zeros(4)
     for i in range(0, threshold):
         col[indexes[i]] = 1
-
     shift = np.hstack([shift, np.c_[col]])
 
+shift = shift[:,1:]  # 先頭の0埋め列を削除する
 
+# 表形式に表示する
+header = ['名前', '月', '火', '水', '木', '金', '土', '日']
+employees = ['山田', '田中', '佐藤', '高橋']
+table = PrettyTable(header)
+table.padding_width = 2  # 左右の空白は 2 つ
 
-    #for j in range(1, 5):
+for i, row in enumerate(shift):
+    row = row.tolist()
+    row.insert(0, employees[i])
+    table.add_row(row)
 
-
-    #for result in results
-
-    #result = np.c_[clf.predict_proba([[i+1,1],[i+1,2],[i+1,3],[i+1,4]])]
-    #shift = np.hstack([shift, result])
-
-print shift[:,1:]
-#     results = clf.predict([[i,1],[i,2]])
-
-
-#print clf.predict_proba([[0,0]])
+print table

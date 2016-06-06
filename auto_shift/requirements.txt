@@ -1,6 +1,7 @@
 mecab-python==0.996
 numpy==1.11.0
 pandas==0.18.1
+prettytable==0.7.2
 python-dateutil==2.5.3
 pytz==2016.4
 scikit-learn==0.17.1
